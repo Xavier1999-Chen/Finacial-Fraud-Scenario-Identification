@@ -1,0 +1,184 @@
+
+
+```{r}
+library(devtools)  # You need to install this package!
+library(DMwR)
+library('readr')
+library('dplyr')
+library('nnet') 
+library(randomForest)
+library(caret)
+# Sys.setenv(LANGUAGE = "en"）
+```
+
+
+```{r}
+dataset = read.csv( "enron.csv")
+
+dataset = subset(dataset, dataset$X != "TOTAL") 
+dataset[is.na(dataset)] = 0
+dataset_processed = select(dataset, -c(X, email_address)) #%>%
+         #   mutate(poi = ifelse(poi == "True",1.0,0.0))
+dataset_processed[,"poi"]  <- factor(dataset_processed[,"poi"])
+# dataset_processed = as.data.frame(dataset_processed)
+
+newData <- SMOTE(poi ~ ., dataset_processed, perc.over = 600,perc.under=600)
+table(newData$poi)
+
+ggplot(dataset_processed, aes(x=salary, y=bonus, shape=poi, color=poi)) +
+  geom_point()
+ggplot(newData, aes(x=salary, y=bonus, shape=poi, color=poi)) +
+  geom_point()
+
+```
+
+```{r}
+dataset_rf = data.frame(newData)
+
+train = sample(nrow(dataset_rf), 0.7*nrow(dataset_rf), replace = FALSE)
+TrainSet = dataset_rf[train,]
+TestSet = dataset_rf[-train,]
+
+
+model_rf = randomForest(poi ~ ., data=TrainSet,mtry = 75, ntree=500, importance = TRUE)           
+model_rf
+
+prediction_rf = predict(model_rf,TestSet)
+confusionMatrix(prediction_rf,TestSet$poi)
+
+```
+```{r}
+varImpPlot(model_rf, n.var = min(18, nrow(model_rf$importance)),
+    main = 'Top 30 - variable importance')
+```
+
+
+```{r}
+#####################
+####Neural Network###
+#####################
+
+#Calculate the error and find a better model
+err11=0
+err12=0
+n_tr=dim(TrainSet)[1]
+n_te=dim(TestSet)[1]
+epochs = 2001
+for(i in seq(1, epochs, 100))
+{
+  model=nnet(poi ~ ., data=TrainSet,maxit=i,size=6,decay = 0.1)
+  err11[i]=sum(predict(model,TrainSet,type='class')!=TrainSet[,'poi'])/n_tr
+  err12[i]=sum(predict(model,TestSet,type='class')!=TestSet['poi'])/n_te
+}
+
+error_1 = na.omit(err11)
+error_2 = na.omit(err12)
+plot(seq(1, epochs, 100),error_1,col=1,type="b",ylab="Error rate",xlab="Training epoch",ylim=c(min(min(error_1),min(error_2)),max(max(error_1),max(error_2))))
+lines(seq(1, epochs, 100),error_2,col=2,type="b")
+legend("topleft",pch=c(15,15),legend=c("Train","Test"),col=c(1,2),bty="n")
+
+
+#Final model and evaluation result
+model_best=nnet(poi ~ ., data=TrainSet,maxit=500,size=6,decay = 0.1)
+prediction_test = predict(model_best,TestSet,type="class")
+table = table(TestSet$poi,prediction_test)
+confusionMatrix(table)
+```
+
+
+```{r}
+gt = TestSet$poi
+table = table(gt,prediction_rf)
+table
+table = table(gt,prediction_test)
+table
+
+
+
+cmp = data.frame(
+  nnet_poi = prediction_test,
+  rf_poi = prediction_rf,
+  gt_poi = gt,
+  bonus = TestSet$bonus,
+  salary = TestSet$salary,
+  acc_rf = prediction_rf==gt,
+  acc_nnet = prediction_test==gt
+)
+ggplot(cmp, aes(x=salary, y=bonus, shape=gt_poi, color=gt_poi)) +
+  geom_point()
+ggplot(cmp, aes(x=salary, y=bonus, shape=rf_poi, color=rf_poi)) +
+  geom_point()
+ggplot(cmp, aes(x=salary, y=bonus, shape=nnet_poi, color=nnet_poi)) +
+  geom_point()
+
+ggplot(cmp, aes(x=salary, y=bonus, shape=acc_rf, color=acc_rf)) +
+  geom_point()
+ggplot(cmp, aes(x=salary, y=bonus, shape=acc_nnet, color=acc_nnet)) +
+  geom_point()
+
+```
+```{r}
+testset = read.csv( "new_records.csv")
+
+
+testset[is.na(testset)] = 0
+
+testset[,"poi"]  <- factor(testset[,"poi"])
+
+
+# newData <- SMOTE(poi ~ ., testset_processed, perc.over = 600,perc.under=600)
+# table(newData$poi)
+table(testset$poi)
+ggplot(testset, aes(x=salary, y=bonus, shape=poi, color=poi)) +
+  geom_point()
+#ggplot(newData, aes(x=salary, y=bonus, shape=poi, color=poi)) +
+#  geom_point()
+```
+```{r}
+nn_test = predict(model_best,testset,type="class")
+table = table(testset$poi,nn_test)
+confusionMatrix(table)
+```
+
+
+```{r}
+rf_test = predict(model_rf,testset)
+confusionMatrix(rf_test,testset$poi)
+```
+
+
+```{r}
+gt = testset$poi
+table = table(gt,rf_test)
+table
+table = table(gt,nn_test)
+table
+
+
+
+cmp = data.frame(
+  nnet_poi = nn_test,
+  rf_poi = rf_test,
+  gt_poi = gt,
+  bonus = testset$bonus,
+  salary = testset$salary,
+  acc_rf = rf_test==gt,
+  acc_nnet = nn_test==gt
+)
+ggplot(cmp, aes(x=salary, y=bonus, shape=gt_poi, color=gt_poi)) +
+  geom_point()
+ggplot(cmp, aes(x=salary, y=bonus, shape=rf_poi, color=rf_poi)) +
+  geom_point()
+ggplot(cmp, aes(x=salary, y=bonus, shape=nnet_poi, color=nnet_poi)) +
+  geom_point()
+
+ggplot(cmp, aes(x=salary, y=bonus, shape=acc_rf, color=acc_rf)) +
+  geom_point()
+ggplot(cmp, aes(x=salary, y=bonus, shape=acc_nnet, color=acc_nnet)) +
+  geom_point()
+```
+
+
+
+
+
