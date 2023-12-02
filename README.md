@@ -48,3 +48,35 @@ Insider trading refers to the buying or selling of securities, such as stocks or
 7. Legal consequences: Both Skilling and Fastow were eventually charged and convicted for their involvement in the Enron scandal. Skilling was convicted of multiple counts of securities fraud, insider trading, and conspiracy, while Fastow pleaded guilty to charges of conspiracy and securities fraud. They both received significant prison sentences and financial penalties for their actions.
 
 The insider trading scheme in the Enron case was a key component of the larger fraud scheme that ultimately led to the downfall of the company. It highlights the unethical behavior and exploitation of inside information by top executives for personal gain, at the expense of shareholders and investors.
+
+************************
+Insider Trading - Illegal practice of trading stocks or securities based on confidential information
+|
+|--- Enron Case
+     |
+     |--- Insider Trading played a significant role
+          |
+          |--- High-level executives involved in trading Enron stocks based on undisclosed information
+               |
+               |--- CEO Jeff Skilling
+               |    |
+               |    |--- Sold large quantities of Enron stock before company's collapse
+               |         |
+               |         |--- Had knowledge of Enron's deteriorating financial condition
+               |              |
+               |              |--- Avoided significant losses and made substantial personal gains
+               |
+               |--- CFO Andrew Fastow
+                    |
+                    |--- Engaged in insider trading through fraudulent transactions using Enron's special purpose entities (SPEs)
+                         |
+                         |--- Manipulated Enron's financial statements and concealed debt
+                              |
+                              |--- Bought assets from Enron at inflated prices and sold them back at lower prices
+                                   |
+                                   |--- Generated personal profits while disguising Enron's financial troubles
+|
+|--- Violation of securities laws and undermined integrity of financial markets
+     |
+     |--- Highlighted unethical practices and fraudulent activities leading to Enron's downfall
+
