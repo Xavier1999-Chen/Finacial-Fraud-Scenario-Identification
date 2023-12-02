@@ -49,7 +49,7 @@ Insider trading refers to the buying or selling of securities, such as stocks or
 
 The insider trading scheme in the Enron case was a key component of the larger fraud scheme that ultimately led to the downfall of the company. It highlights the unethical behavior and exploitation of inside information by top executives for personal gain, at the expense of shareholders and investors.
 
-************************
+<!--************************
 Insider Trading - Illegal practice of trading stocks or securities based on confidential information
 |
 |--- Enron Case
@@ -79,4 +79,4 @@ Insider Trading - Illegal practice of trading stocks or securities based on conf
 |--- Violation of securities laws and undermined integrity of financial markets
      |
      |--- Highlighted unethical practices and fraudulent activities leading to Enron's downfall
-
+-->
